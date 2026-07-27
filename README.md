@@ -43,6 +43,7 @@ python -m uvicorn main:app --reload
 | Méthode | Route | Description |
 |---|---|---|
 | GET | `/depenses` | Liste toutes les dépenses |
+| GET | /depenses/{id} | Récupère une dépense précise par son id |
 | POST | `/depenses` | Crée une nouvelle dépense |
 | PUT | `/depenses/{id}` | Modifie une dépense existante |
 | DELETE | `/depenses/{id}` | Supprime une dépense |
