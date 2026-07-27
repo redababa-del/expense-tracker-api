@@ -90,6 +90,23 @@ def get_depense_by_id(id):
     return depense
 
 
+def get_depenses_by_user(user_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT * 
+        FROM depenses 
+        WHERE user_id = %s
+    """, (user_id,))
+
+    depenses = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+    return depenses
+
+
 def update_depense(id, montant, categorie, date, user_id):
     conn = get_connection()
     cursor = conn.cursor()
