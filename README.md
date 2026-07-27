@@ -44,6 +44,7 @@ python -m uvicorn main:app --reload
 |---|---|---|
 | GET | `/depenses` | Liste toutes les dépenses |
 | GET | /depenses/{id} | Récupère une dépense précise par son id |
+| GET | /depenses/utilisateur/{user_id} | Liste les dépenses d'un utilisateur précis |
 | POST | `/depenses` | Crée une nouvelle dépense |
 | PUT | `/depenses/{id}` | Modifie une dépense existante |
 | DELETE | `/depenses/{id}` | Supprime une dépense |
