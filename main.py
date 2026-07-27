@@ -1,9 +1,10 @@
 from fastapi import FastAPI, HTTPException
 from models import Depense
-from database import create_depense, get_all_depenses, get_depense_by_id, update_depense, delete_depense
+from database import create_depense
+from database import get_all_depenses, get_depense_by_id, get_depenses_by_user
+from database import update_depense, delete_depense
 
 app = FastAPI()
-
 
 
 
@@ -22,11 +23,18 @@ def lister_depense_id(id : int):
     return depense
 
 
+@app.get("/depenses/utilisateur/{user_id}")
+def lister_depense_user_id(user_id: int):
+    depenses = get_depenses_by_user(user_id)
+    return depenses
+
+
 
 @app.post("/depenses")
 def ajouter_depense(depense : Depense):
     create_depense(depense.montant, depense.categorie, depense.date, depense.user_id)
     return {"message": "Dépense créée"}
+
 
 
 @app.put("/depenses/{id}")
