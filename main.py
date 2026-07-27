@@ -12,6 +12,17 @@ def lister_depenses():
     return get_all_depenses()
 
 
+@app.get("/depenses/{id}")
+def lister_depense_id(id : int):
+    depense = get_depense_by_id(id)
+
+    if depense is None:
+        raise HTTPException(status_code=404, detail="depense introuvable")
+
+    return depense
+
+
+
 @app.post("/depenses")
 def ajouter_depense(depense : Depense):
     create_depense(depense.montant, depense.categorie, depense.date, depense.user_id)
