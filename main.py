@@ -3,6 +3,7 @@ from models import Depense
 from database import create_depense
 from database import get_all_depenses, get_depense_by_id, get_depenses_by_user
 from database import update_depense, delete_depense
+from database import total_depenses_par_utilisateur
 
 app = FastAPI()
 
@@ -27,6 +28,12 @@ def lister_depense_id(id : int):
 def lister_depense_user_id(user_id: int):
     depenses = get_depenses_by_user(user_id)
     return depenses
+
+
+@app.get("/depenses/utilisateur/{user_id}/total")
+def total_depenses_user_id(user_id: int):
+    total = total_depenses_par_utilisateur(user_id)
+    return {"user_id": user_id, "total": total}
 
 
 

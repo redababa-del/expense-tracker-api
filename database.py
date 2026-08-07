@@ -107,6 +107,23 @@ def get_depenses_by_user(user_id):
     return depenses
 
 
+def total_depenses_par_utilisateur(user_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT COALESCE(SUM(montant), 0)
+        FROM depenses
+        WHERE user_id = %s
+    """, (user_id,))
+
+    total = cursor.fetchone()[0]
+
+    cursor.close()
+    conn.close()
+    return total
+
+
 def update_depense(id, montant, categorie, date, user_id):
     conn = get_connection()
     cursor = conn.cursor()
