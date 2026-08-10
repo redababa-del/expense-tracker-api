@@ -1,22 +1,22 @@
 # Expense Tracker API
 
-Une API REST permettant de gérer les dépenses de plusieurs utilisateurs : ajout, consultation, modification et suppression de dépenses, ainsi que des statistiques agrégées par catégorie et par mois.
+A REST API for managing expenses across multiple users: adding, viewing, updating, and deleting expenses, plus aggregated stats by category and by month.
 
-Construite avec **FastAPI** et **PostgreSQL**.
+Built with **FastAPI** and **PostgreSQL**.
 
-## Configuration de la base de données
+## Database setup
 
-1. Installer PostgreSQL et créer une base nommée `expenses` (via pgAdmin ou en ligne de commande).
-2. Créer un fichier `.env` à la racine du projet avec le contenu suivant :
+1. Install PostgreSQL and create a database named `expenses` (via pgAdmin or the command line).
+2. Create a `.env` file at the root of the project with the following content:
 
 ```
 DB_HOST=localhost
 DB_NAME=expenses
 DB_USER=postgres
-DB_PASSWORD=votre_mot_de_passe
+DB_PASSWORD=your_password
 ```
 
-⚠️ Ce fichier ne doit jamais être poussé sur GitHub (il est déjà exclu via `.gitignore`).
+⚠️ This file should never be pushed to GitHub (it's already excluded via `.gitignore`).
 
 ## Installation
 
@@ -24,41 +24,41 @@ DB_PASSWORD=votre_mot_de_passe
 pip install fastapi uvicorn psycopg2-binary python-dotenv
 ```
 
-## Lancer le projet
+## Running the project
 
-1. Créer les tables (à faire une seule fois) :
+1. Create the tables (only needs to be done once):
 ```bash
 python database.py
 ```
 
-2. Démarrer le serveur :
+2. Start the server:
 ```bash
 python -m uvicorn main:app --reload
 ```
 
-3. Ouvrir la documentation interactive : [http://localhost:8000/docs](http://localhost:8000/docs)
+3. Open the interactive docs: [http://localhost:8000/docs](http://localhost:8000/docs)
 
-## Routes disponibles
+## Available routes
 
-| Méthode | Route | Description |
+| Method | Route | Description |
 |---|---|---|
-| GET | `/depenses` | Liste toutes les dépenses |
-| GET | /depenses/{id} | Récupère une dépense précise par son id |
-| GET | /depenses/utilisateur/{user_id} | Liste les dépenses d'un utilisateur précis |
-| GET | /depenses/utilisateur/{user_id}/total | Calcule le total de toutes les dépenses d'un utilisateur |
-| POST | `/depenses` | Crée une nouvelle dépense |
-| PUT | `/depenses/{id}` | Modifie une dépense existante |
-| DELETE | `/depenses/{id}` | Supprime une dépense |
-| GET | `/stats/categorie` | Renvoie le total des dépenses par catégorie |
-| GET | `/stats/mois` | Renvoie le total des dépenses par mois |
+| GET | `/expenses` | List all expenses |
+| GET | `/expenses/{id}` | Get a specific expense by id |
+| GET | `/expenses/user/{user_id}` | List expenses for a specific user |
+| GET | `/expenses/user/{user_id}/total` | Get the total of all expenses for a user |
+| POST | `/expenses` | Create a new expense |
+| PUT | `/expenses/{id}` | Update an existing expense |
+| DELETE | `/expenses/{id}` | Delete an expense |
+| GET | `/stats/category` | Get total expenses by category |
+| GET | `/stats/month` | Get total expenses by month |
 
-## Structure du projet
+## Project structure
 
 ```
 expense-tracker/
-├── main.py        # Routes de l'API
-├── database.py     # Connexion et requêtes SQL
-├── models.py       # Modèles Pydantic
-├── .env            # Variables d'environnement (non versionné)
+├── main.py         # API routes
+├── database.py      # Connection and SQL queries
+├── models.py        # Pydantic models
+├── .env              # Environment variables (not versioned)
 └── .gitignore
 ```

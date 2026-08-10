@@ -1,81 +1,81 @@
 from fastapi import FastAPI, HTTPException
-from models import Depense
-from database import create_depense
-from database import get_all_depenses, get_depense_by_id, get_depenses_by_user
-from database import update_depense, delete_depense
-from database import total_depenses_par_utilisateur
+from models import Expense
+from database import create_expense
+from database import get_all_expenses, get_expense_by_id, get_expenses_by_user
+from database import update_expense, delete_expense
+from database import total_expenses_by_user
 
 app = FastAPI()
 
 
 
-@app.get("/depenses")
-def lister_depenses():
-    return get_all_depenses()
+@app.get("/expenses")
+def list_expenses():
+    return get_all_expenses()
 
 
-@app.get("/depenses/{id}")
-def lister_depense_id(id : int):
-    depense = get_depense_by_id(id)
+@app.get("/expenses/{id}")
+def list_expense_id(id : int):
+    expense = get_expense_by_id(id)
 
-    if depense is None:
-        raise HTTPException(status_code=404, detail="depense introuvable")
+    if expense is None:
+        raise HTTPException(status_code=404, detail="expense not found")
 
-    return depense
-
-
-@app.get("/depenses/utilisateur/{user_id}")
-def lister_depense_user_id(user_id: int):
-    depenses = get_depenses_by_user(user_id)
-    return depenses
+    return expense
 
 
-@app.get("/depenses/utilisateur/{user_id}/total")
-def total_depenses_user_id(user_id: int):
-    total = total_depenses_par_utilisateur(user_id)
+@app.get("/expenses/user/{user_id}")
+def list_expense_by_user_id(user_id: int):
+    expenses = get_expenses_by_user(user_id)
+    return expenses
+
+
+@app.get("/expenses/user/{user_id}/total")
+def total_expenses_user_id(user_id: int):
+    total = total_expenses_by_user(user_id)
     return {"user_id": user_id, "total": total}
 
 
 
-@app.post("/depenses")
-def ajouter_depense(depense : Depense):
-    create_depense(depense.montant, depense.categorie, depense.date, depense.user_id)
-    return {"message": "Dépense créée"}
+@app.post("/expenses")
+def add_expense(expense : Expense):
+    create_expense(expense.amount, expense.category, expense.date, expense.user_id)
+    return {"message": "Expense created"}
 
 
 
-@app.put("/depenses/{id}")
-def mettre_a_j_depense(id: int, depense_maj: Depense):
-    depense = get_depense_by_id(id)
+@app.put("/expenses/{id}")
+def update_expense_endpoint(id: int, expense_update: Expense):
+    expense = get_expense_by_id(id)
     
-    if depense is None:
-        raise HTTPException(status_code=404, detail="Dépense introuvable")
+    if expense is None:
+        raise HTTPException(status_code=404, detail="Expense not found")
     
-    update_depense(id, depense_maj.montant, depense_maj.categorie, depense_maj.date, depense_maj.user_id)
+    update_expense(id, expense_update.amount, expense_update.category, expense_update.date, expense_update.user_id)
     
-    return {"message": "Dépense modifiée"}
+    return {"message": "Expense updated"}
 
 
-@app.delete("/depenses/{id}")
-def supprimer_depense(id: int):
-    depense = get_depense_by_id(id)
+@app.delete("/expenses/{id}")
+def delete_expense_endpoint(id: int):
+    expense = get_expense_by_id(id)
     
-    if depense is None:
-        raise HTTPException(status_code=404, detail="depense introuvable")
+    if expense is None:
+        raise HTTPException(status_code=404, detail="expense not found")
     
-    delete_depense(id)
+    delete_expense(id)
     
-    return {"message": "depense supprimé"}
+    return {"message": "expense deleted"}
 
 
-from database import total_par_categorie, total_par_mois
+from database import total_by_category, total_by_month
 
 
-@app.get("/stats/categorie")
-def dep_par_cat():
-    return total_par_categorie()
+@app.get("/stats/category")
+def expenses_by_category():
+    return total_by_category()
 
 
-@app.get("/stats/mois")
-def dep_par_mois():
-    return total_par_mois()
+@app.get("/stats/month")
+def expenses_by_month():
+    return total_by_month()

@@ -22,19 +22,19 @@ def init_db():
 
     cursor.execute(
         """
-        CREATE TABLE IF NOT EXISTS utilisateurs(
+        CREATE TABLE IF NOT EXISTS users(
             id SERIAL PRIMARY KEY,
-            nom VARCHAR(100) NOT NULL,
+            name VARCHAR(100) NOT NULL,
             email VARCHAR(255) UNIQUE NOT NULL
         );
 
-        CREATE TABLE IF NOT EXISTS depenses(
+        CREATE TABLE IF NOT EXISTS expenses(
             id SERIAL PRIMARY KEY,
-            montant NUMERIC(10,2) NOT NULL,
-            categorie VARCHAR(100) NOT NULL,
+            amount NUMERIC(10,2) NOT NULL,
+            category VARCHAR(100) NOT NULL,
             date DATE NOT NULL,
             user_id INTEGER NOT NULL,
-            FOREIGN KEY (user_id) REFERENCES utilisateurs(id)
+            FOREIGN KEY (user_id) REFERENCES users(id)
         );
         """
     )
@@ -43,77 +43,77 @@ def init_db():
     conn.close()
 
 
-def create_depense(montant, categorie, date, user_id):
+def create_expense(amount, category, date, user_id):
     conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
-        INSERT INTO depenses (montant, categorie, date, user_id)
+        INSERT INTO expenses (amount, category, date, user_id)
         VALUES (%s, %s, %s, %s)
-    """, (montant, categorie, date, user_id))
+    """, (amount, category, date, user_id))
 
     conn.commit()
     cursor.close()
     conn.close()
 
 
-def get_all_depenses():
+def get_all_expenses():
     conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
         SELECT *
-        FROM depenses
+        FROM expenses
     """)
 
-    depenses = cursor.fetchall()
+    expenses = cursor.fetchall()
 
     cursor.close()
     conn.close()
-    return depenses
+    return expenses
 
 
-def get_depense_by_id(id):
+def get_expense_by_id(id):
     conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
         SELECT *
-        FROM depenses
+        FROM expenses
         WHERE id = %s
     """, (id,))
 
-    depense = cursor.fetchone()
+    expense = cursor.fetchone()
 
     cursor.close()
     conn.close()
-    return depense
+    return expense
 
 
-def get_depenses_by_user(user_id):
+def get_expenses_by_user(user_id):
     conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
         SELECT * 
-        FROM depenses 
+        FROM expenses 
         WHERE user_id = %s
     """, (user_id,))
 
-    depenses = cursor.fetchall()
+    expenses = cursor.fetchall()
 
     cursor.close()
     conn.close()
-    return depenses
+    return expenses
 
 
-def total_depenses_par_utilisateur(user_id):
+def total_expenses_by_user(user_id):
     conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT COALESCE(SUM(montant), 0)
-        FROM depenses
+        SELECT COALESCE(SUM(amount), 0)
+        FROM expenses
         WHERE user_id = %s
     """, (user_id,))
 
@@ -124,30 +124,30 @@ def total_depenses_par_utilisateur(user_id):
     return total
 
 
-def update_depense(id, montant, categorie, date, user_id):
+def update_expense(id, amount, category, date, user_id):
     conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
-        UPDATE depenses
-        SET montant = %s,
-            categorie = %s,
+        UPDATE expenses
+        SET amount = %s,
+            category = %s,
             date = %s,
             user_id = %s
         WHERE id = %s
-    """, (montant, categorie, date, user_id, id))
+    """, (amount, category, date, user_id, id))
 
     conn.commit()
     cursor.close()
     conn.close()
 
 
-def delete_depense(id):
+def delete_expense(id):
     conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
-        DELETE FROM depenses
+        DELETE FROM expenses
         WHERE id = %s
     """, (id,))
 
@@ -156,46 +156,46 @@ def delete_depense(id):
     conn.close()
 
 
-def total_par_categorie():
+def total_by_category():
     conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT categorie, SUM(montant)
-        FROM depenses
-        GROUP BY categorie
+        SELECT category, SUM(amount)
+        FROM expenses
+        GROUP BY category
     """)
 
-    resultats = cursor.fetchall()
+    results = cursor.fetchall()
     cursor.close()
     conn.close()
-    return resultats
+    return results
 
 
-def total_par_mois():
+def total_by_month():
     conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT DATE_TRUNC('month', date) AS mois, SUM(montant)
-        FROM depenses
-        GROUP BY mois
+        SELECT DATE_TRUNC('month', date) AS month, SUM(amount)
+        FROM expenses
+        GROUP BY month
     """)
 
-    resultats = cursor.fetchall()
+    results = cursor.fetchall()
     cursor.close()
     conn.close()
-    return resultats
+    return results
 
 
-def ajouter_utilisateur(nom, email):
+def add_user(name, email):
     conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
-        INSERT INTO utilisateurs (nom, email)
+        INSERT INTO users (name, email)
         VALUES (%s, %s)
-    """, (nom, email))
+    """, (name, email))
 
     conn.commit()
     cursor.close()
@@ -210,6 +210,6 @@ def ajouter_utilisateur(nom, email):
 
 if __name__ == "__main__":
     conn = get_connection()
-    print("Connexion réussie !")
+    print("Connection successful!")
     init_db()
     conn.close()

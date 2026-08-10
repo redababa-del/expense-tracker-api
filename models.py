@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
-class Depense(BaseModel):
-    montant: float
-    categorie: str
+class Expense(BaseModel):
+    amount: float
+    category: str
     date: str
     user_id: int
