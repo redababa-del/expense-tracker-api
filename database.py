@@ -188,21 +188,35 @@ def total_by_month():
     return results
 
 
-def add_user(name, email):
+def add_user(name, email, password_hash):
     conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
-        INSERT INTO users (name, email)
-        VALUES (%s, %s)
-    """, (name, email))
+        INSERT INTO users (name, email, password_hash)
+        VALUES (%s, %s, %s)
+    """, (name, email, password_hash))
 
     conn.commit()
     cursor.close()
     conn.close()
 
 
+def get_user_by_email(email):
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    cursor.execute("""
+        SELECT * 
+        FROM users
+        WHERE email = %s
+    """, (email,))
 
+    user = cursor.fetchone()
+    
+    cursor.close()
+    conn.close()
+    return user
 
 
 
