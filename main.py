@@ -79,3 +79,31 @@ def expenses_by_category():
 @app.get("/stats/month")
 def expenses_by_month():
     return total_by_month()
+
+
+#auth :
+from database import add_user, get_user_by_email
+from models import UserRegister, LoginRequest, Expense
+from auth import hash_password, verify_password
+
+
+@app.post("/register")
+def register(user: UserRegister):
+    password_hash = hash_password(user.password)
+    add_user(user.name, user.email, password_hash)
+    return {"message": "User created"}
+
+
+@app.post("/login")
+def login(credentials: LoginRequest):
+    user = get_user_by_email(credentials.email)
+
+    if user is None:
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+
+    stored_password_hash = user[3]
+
+    if not verify_password(credentials.password, stored_password_hash):
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+
+    return {"message": "Login successful"}
