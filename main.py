@@ -1,11 +1,28 @@
-from fastapi import FastAPI, HTTPException
-from models import Expense
-from database import create_expense
-from database import get_all_expenses, get_expense_by_id, get_expenses_by_user
-from database import update_expense, delete_expense
-from database import total_expenses_by_user
+from fastapi import FastAPI, HTTPException, Depends
+from fastapi.security import OAuth2PasswordBearer
+from models import Expense, UserRegister, LoginRequest
+from database import create_expense, get_all_expenses, get_expense_by_id, get_expenses_by_user
+from database import update_expense, delete_expense, total_expenses_by_user
+from database import add_user, get_user_by_email
+from auth import hash_password, verify_password, create_access_token, verify_token
+from fastapi.security import HTTPBearer
+
+
 
 app = FastAPI()
+
+
+
+oauth2_scheme = HTTPBearer()
+
+def get_current_user_id(credentials = Depends(oauth2_scheme)):
+    payload = verify_token(credentials.credentials)
+    if payload is None:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+    return payload["user_id"]
+
+
+
 
 
 
@@ -15,25 +32,31 @@ def list_expenses():
 
 
 @app.get("/expenses/{id}")
-def list_expense_id(id : int):
+def get_expense(id: int, current_user_id: int = Depends(get_current_user_id)):
     expense = get_expense_by_id(id)
 
     if expense is None:
-        raise HTTPException(status_code=404, detail="expense not found")
+        raise HTTPException(status_code=404, detail="Expense not found")
+
+    if expense[4] != current_user_id:  # index 4 = user_id, vérifie l'ordre chez toi
+        raise HTTPException(status_code=403, detail="Access forbidden")
 
     return expense
 
 
 @app.get("/expenses/user/{user_id}")
-def list_expense_by_user_id(user_id: int):
+def list_expense_by_user_id(user_id: int, current_user_id: int = Depends(get_current_user_id)):
+    if user_id != current_user_id:
+        raise HTTPException(status_code=403, detail="Access forbidden")
     expenses = get_expenses_by_user(user_id)
     return expenses
 
 
 @app.get("/expenses/user/{user_id}/total")
-def total_expenses_user_id(user_id: int):
-    total = total_expenses_by_user(user_id)
-    return {"user_id": user_id, "total": total}
+def get_user_total(user_id: int, current_user_id: int = Depends(get_current_user_id)):
+    if user_id != current_user_id:
+        raise HTTPException(status_code=403, detail="Access forbidden")
+    return {"total": total_expenses_by_user(user_id)}
 
 
 
@@ -45,27 +68,31 @@ def add_expense(expense : Expense):
 
 
 @app.put("/expenses/{id}")
-def update_expense_endpoint(id: int, expense_update: Expense):
+def update_expense(id: int, updated_expense: Expense, current_user_id: int = Depends(get_current_user_id)):
     expense = get_expense_by_id(id)
-    
+
     if expense is None:
         raise HTTPException(status_code=404, detail="Expense not found")
-    
-    update_expense(id, expense_update.amount, expense_update.category, expense_update.date, expense_update.user_id)
-    
+
+    if expense[4] != current_user_id:
+        raise HTTPException(status_code=403, detail="Access forbidden")
+
+    update_expense(id, updated_expense.montant, updated_expense.categorie, updated_expense.date, updated_expense.user_id)
     return {"message": "Expense updated"}
 
 
 @app.delete("/expenses/{id}")
-def delete_expense_endpoint(id: int):
+def delete_expense(id: int, current_user_id: int = Depends(get_current_user_id)):
     expense = get_expense_by_id(id)
-    
+
     if expense is None:
-        raise HTTPException(status_code=404, detail="expense not found")
-    
+        raise HTTPException(status_code=404, detail="Expense not found")
+
+    if expense[4] != current_user_id:
+        raise HTTPException(status_code=403, detail="Access forbidden")
+
     delete_expense(id)
-    
-    return {"message": "expense deleted"}
+    return {"message": "Expense deleted"}
 
 
 from database import total_by_category, total_by_month
@@ -84,7 +111,7 @@ def expenses_by_month():
 #auth :
 from database import add_user, get_user_by_email
 from models import UserRegister, LoginRequest, Expense
-from auth import hash_password, verify_password
+from auth import hash_password, verify_password, create_access_token
 
 
 @app.post("/register")
@@ -106,4 +133,5 @@ def login(credentials: LoginRequest):
     if not verify_password(credentials.password, stored_password_hash):
         raise HTTPException(status_code=401, detail="Invalid email or password")
 
-    return {"message": "Login successful"}
+    token = create_access_token({"user_id": user[0]})
+    return {"access_token": token, "token_type": "bearer"}
