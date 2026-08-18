@@ -91,7 +91,7 @@ from auth import hash_password, verify_password
 def register(user: UserRegister):
     password_hash = hash_password(user.password)
     add_user(user.name, user.email, password_hash)
-    return {"message": "Utilisateur créé"}
+    return {"message": "User created"}
 
 
 @app.post("/login")
@@ -99,11 +99,11 @@ def login(credentials: LoginRequest):
     user = get_user_by_email(credentials.email)
 
     if user is None:
-        raise HTTPException(status_code=401, detail="Email ou mot de passe incorrect")
+        raise HTTPException(status_code=401, detail="Invalid email or password")
 
-    stored_password_hash = user[3]  # à ajuster selon l'ordre de tes colonnes
+    stored_password_hash = user[3]
 
     if not verify_password(credentials.password, stored_password_hash):
-        raise HTTPException(status_code=401, detail="Email ou mot de passe incorrect")
+        raise HTTPException(status_code=401, detail="Invalid email or password")
 
-    return {"message": "Connexion réussie"}
+    return {"message": "Login successful"}
