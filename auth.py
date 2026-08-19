@@ -37,12 +37,3 @@ def verify_token(token: str):
         return payload
     except Exception:
         return None
-
-
-
-# Tests
-if __name__ == "__main__":
-    hashed = hash_password("test123")
-    print(hashed)
-    print(verify_password("test123", hashed))
-    print(verify_password("mauvais_mdp", hashed))
