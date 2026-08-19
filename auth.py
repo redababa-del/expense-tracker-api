@@ -8,7 +8,6 @@ from datetime import datetime, timedelta
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-
 def hash_password(password):
     return pwd_context.hash(password)
 
@@ -19,7 +18,7 @@ def verify_password(plain_password, hashed_password):
 
 
 # JWT
-SECRET_KEY = "change_moi_avec_une_vraie_cle_secrete_longue"
+SECRET_KEY = "the-real-secret-long-key-reda-made"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 

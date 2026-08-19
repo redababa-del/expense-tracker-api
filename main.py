@@ -42,7 +42,7 @@ def get_expense(id: int, current_user_id: int = Depends(get_current_user_id)):
     if expense is None:
         raise HTTPException(status_code=404, detail="Expense not found")
 
-    if expense[4] != current_user_id:  # index 4 = user_id, vérifie l'ordre chez toi
+    if expense[4] != current_user_id:  # index 4 = user_id
         raise HTTPException(status_code=403, detail="Access forbidden")
 
     return expense
