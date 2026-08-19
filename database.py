@@ -1,3 +1,4 @@
+# Connecting to databse(Postgresql)
 import psycopg2
 
 import os
@@ -16,6 +17,7 @@ def get_connection():
 
 
 
+# Initializing the database
 def init_db():
     conn = get_connection()
     cursor = conn.cursor()
@@ -43,6 +45,9 @@ def init_db():
     conn.close()
 
 
+
+
+# Functions
 def create_expense(amount, category, date, user_id):
     conn = get_connection()
     cursor = conn.cursor()
@@ -221,7 +226,7 @@ def get_user_by_email(email):
 
 
 
-
+# Main
 if __name__ == "__main__":
     conn = get_connection()
     print("Connection successful!")

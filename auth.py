@@ -1,8 +1,13 @@
+# Imports
 from passlib.context import CryptContext
 from jose import jwt
+
 from datetime import datetime, timedelta
 
+# Password Security
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
 
 def hash_password(password):
     return pwd_context.hash(password)
@@ -13,16 +18,7 @@ def verify_password(plain_password, hashed_password):
 
 
 
-if __name__ == "__main__":
-    hashed = hash_password("test123")
-    print(hashed)
-    print(verify_password("test123", hashed))
-    print(verify_password("mauvais_mdp", hashed))
-
-
-
-
-
+# JWT
 SECRET_KEY = "change_moi_avec_une_vraie_cle_secrete_longue"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
@@ -41,3 +37,12 @@ def verify_token(token: str):
         return payload
     except Exception:
         return None
+
+
+
+# Tests
+if __name__ == "__main__":
+    hashed = hash_password("test123")
+    print(hashed)
+    print(verify_password("test123", hashed))
+    print(verify_password("mauvais_mdp", hashed))
